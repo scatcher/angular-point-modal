@@ -1,6 +1,6 @@
 {
     "name": "angular-point-modal",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "homepage": "https://github.com/scatcher/angular-point-modal",
     "authors": [
         "Scott <github@scotthatcher.com>"
@@ -8,15 +8,15 @@
     "distPath": "dist",
     "description": "Modal service for angular-point and ui-bootstraps modal dialog.",
     "license": "MIT",
-    "main": "./dist/angular-point-modal.min.js",
+    "main": "./dist/apModalService.min.js",
     "dependencies": {
         "angular": "~1.2",
+        "angular-bootstrap": "^0.11",
         "angular-point": "latest"
     },
     "devDependencies": {
         "angular-sanitize": "~1.2",
-        "angular-mocks": "~1.2",
-        "angular-bootstrap": "^0.11"
+        "angular-mocks": "~1.2"
     },
     "ignore": [
         "**/.*",
