@@ -102,7 +102,7 @@ angular.module('angularPoint')
                 userPermissions.fullControl = userPermMask.FullMask;
             }
 
-            if (entity && entity.resolvePermissions) {
+            if (entity && entity.id && entity.resolvePermissions) {
                 resolvePermissions(entity);
             } else if (model && model.resolvePermissions) {
                 /** Fallback to retrieve permissions from the model when a list item isn't available */

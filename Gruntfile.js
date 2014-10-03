@@ -148,6 +148,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('build', [
         'coverage',
+        'bump',
         'clean:dist',
         'ngAnnotate',
         'uglify'
