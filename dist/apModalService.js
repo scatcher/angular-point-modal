@@ -162,7 +162,7 @@ var ap;
                     /** Optionally lock the list item for editing if the the sync service is included */
                     if (config.lock) {
                         lockInfo = listItem.lock();
-                        defaults.resolve.lock = function () { return lockInfo; };
+                        defaults.resolve.lockInfo = function () { return lockInfo; };
                     }
                     var modalConfig = _.assign({}, defaults, config);
                     var modalInstance = $modal.open(modalConfig);

@@ -185,7 +185,7 @@ module ap.modal {
                 /** Optionally lock the list item for editing if the the sync service is included */
                 if (config.lock) {
                     lockInfo = listItem.lock();
-                    defaults.resolve.lock = () => lockInfo;
+                    defaults.resolve.lockInfo = () => lockInfo;
                 }
 
                 var modalConfig = _.assign({}, defaults, config);
