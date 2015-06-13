@@ -1,10 +1,11 @@
+/// <reference path="../typings/ap.d.ts" />
 module ap.modal {
     'use strict';
 
 
     var toastr, $modal: angular.ui.bootstrap.IModalService;
 
-    interface IPermObject {
+    export interface IPermObject {
         resolvePermissions(): {
             EditListItems: boolean;
             DeleteListItems: boolean;
@@ -12,11 +13,6 @@ module ap.modal {
             FullMask: boolean;
         };
     }
-
-    interface IListItem {
-        getModel(): Object
-    }
-
 
     export class APModal {
         displayMode: string;
@@ -84,7 +80,7 @@ module ap.modal {
                 return this.listItem.deleteItem(options).then(() => {
                     toastr.success('Record deleted successfully');
                     this.$modalInstance.close();
-                }, function () {
+                }, function() {
                     toastr.error('Failed to delete record.  Please try again.');
                 });
             }
@@ -121,7 +117,7 @@ module ap.modal {
     function takeListItemSnapshot(listItem): Object {
         var model = listItem.getModel();
         var snapshot = {};
-        _.each(model.list.fields, function (fieldDefinition) {
+        _.each(model.list.fields, function(fieldDefinition) {
             if (!fieldDefinition.readOnly) {
                 snapshot[fieldDefinition.mappedName] = listItem[fieldDefinition.mappedName];
             }
@@ -130,9 +126,11 @@ module ap.modal {
     }
 
     export class APModalService {
-        constructor($injector) {
-            toastr = $injector.get('toastr');
-            $modal = $injector.get('$modal');
+        static $inject = ['toastr', '$modal'];
+        
+        constructor(_toastr_, _$modal_) {
+            toastr = _toastr_;
+            $modal = _$modal_;
 
         }
 
@@ -165,7 +163,7 @@ module ap.modal {
          *    });
          * </pre>
          */
-        modalModelProvider(config: {templateUrl:string; controller:string; resolver?:Function; size?:string; controllerAs?:string; lock?:boolean;}): (listItem?) => ng.ui.bootstrap.IModalService {
+        modalModelProvider(config: { templateUrl: string; controller: string; resolver?: Function; size?: string; controllerAs?: string; lock?: boolean; }): (listItem?) => angular.IPromise<any> {
             return function openModal(listItem?) {
                 var model = this, snapshot, lockInfo;
                 listItem = listItem || model.createEmptyItem();
@@ -196,12 +194,12 @@ module ap.modal {
                     /** Create a copy in case we need to revert back */
                     snapshot = takeListItemSnapshot(listItem);
 
-                    modalInstance.result.then(function () {
+                    modalInstance.result.then(function() {
                         if (config.lock) {
                             lockInfo.then((resolvedInfo) => resolvedInfo.unlock());
                         }
 
-                    }, function () {
+                    }, function() {
                         /** Revert back any changes that were made to editable fields, leaving changes made
                          * to readonly fields like attachments */
                         _.assign(listItem, snapshot);

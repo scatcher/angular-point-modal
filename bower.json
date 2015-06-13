@@ -1,19 +1,24 @@
 {
-    "name": "angular-point-modal",
-    "version": "1.0.1",
-    "homepage": "https://github.com/scatcher/angular-point-modal",
-    "authors": [
-        "Scott <github@scotthatcher.com>"
-    ],
-    "distPath": "dist",
-    "description": "Modal service for angular-point and ui-bootstraps modal dialog.",
-    "license": "MIT",
-    "main": "./dist/apModalService.js",
-    "dependencies": {},
-    "devDependencies": {},
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components"
-    ]
+  "name": "angular-point-modal",
+  "version": "2.0.0",
+  "homepage": "https://github.com/scatcher/angular-point-modal",
+  "authors": [
+    "Scott <github@scotthatcher.com>"
+  ],
+  "distPath": "dist",
+  "description": "Modal service for angular-point and ui-bootstraps modal dialog.",
+  "license": "MIT",
+  "main": "./dist/angular-point-modal.js",
+  "dependencies": {
+    "angular-point": "^3.2.0"
+  },
+  "devDependencies": {},
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "typescript": {
+    "definition": "./typings/ap.d.ts"
+  }
 }

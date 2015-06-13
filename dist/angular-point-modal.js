@@ -1,3 +1,4 @@
+/// <reference path="../typings/ap.d.ts" />
 var ap;
 (function (ap) {
     var modal;
@@ -112,11 +113,10 @@ var ap;
             return snapshot;
         }
         var APModalService = (function () {
-            function APModalService($injector) {
-                toastr = $injector.get('toastr');
-                $modal = $injector.get('$modal');
+            function APModalService(_toastr_, _$modal_) {
+                toastr = _toastr_;
+                $modal = _$modal_;
             }
-            APModalService.$inject = ['$injector'];
             /**
              * @ngdoc function
              * @name angularPoint.apModalService:modalModelProvider
@@ -185,6 +185,7 @@ var ap;
                     return modalInstance.result;
                 };
             };
+            APModalService.$inject = ['toastr', '$modal'];
             return APModalService;
         })();
         modal.APModalService = APModalService;
@@ -195,6 +196,9 @@ var ap;
          * Extends a modal form to include many standard functions
          *
          */
-        angular.module('angularPoint').service('apModalService', APModalService);
+        angular.module('angularPoint')
+            .service('apModalService', APModalService);
     })(modal = ap.modal || (ap.modal = {}));
 })(ap || (ap = {}));
+
+//# sourceMappingURL=angular-point-modal.js.map
