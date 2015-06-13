@@ -1,4 +1,5 @@
 /// <reference path="../typings/ap.d.ts" />
+
 module ap.modal {
     'use strict';
 
