@@ -1,4 +1,4 @@
-/// <reference path="../typings/ap.d.ts" />
+/// <reference path="../typings/tsd.d.ts" />
 var ap;
 (function (ap) {
     var modal;
@@ -189,15 +189,25 @@ var ap;
             return APModalService;
         })();
         modal.APModalService = APModalService;
+    })(modal = ap.modal || (ap.modal = {}));
+})(ap || (ap = {}));
+
+/// <reference path="../typings/tsd.d.ts" />
+/// <reference path="../typings/ap.d.ts" />
+var ap;
+(function (ap) {
+    var modal;
+    (function (modal) {
+        'use strict';
         /**
-         * @ngdoc service
-         * @name ap.apModalService
-         * @description
-         * Extends a modal form to include many standard functions
-         *
-         */
+     * @ngdoc service
+     * @name ap.apModalService
+     * @description
+     * Extends a modal form to include many standard functions
+     *
+     */
         angular.module('angularPoint')
-            .service('apModalService', APModalService);
+            .service('apModalService', modal.APModalService);
     })(modal = ap.modal || (ap.modal = {}));
 })(ap || (ap = {}));
 

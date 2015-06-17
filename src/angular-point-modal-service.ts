@@ -1,4 +1,4 @@
-/// <reference path="../typings/ap.d.ts" />
+/// <reference path="../typings/tsd.d.ts" />
 
 module ap.modal {
     'use strict';
@@ -217,14 +217,6 @@ module ap.modal {
 
     }
 
-    /**
-     * @ngdoc service
-     * @name ap.apModalService
-     * @description
-     * Extends a modal form to include many standard functions
-     *
-     */
-    angular.module('angularPoint')
-        .service('apModalService', APModalService);
+
 
 }
