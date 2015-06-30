@@ -101,17 +101,6 @@ var ap;
             return APModal;
         })();
         modal.APModal = APModal;
-        /** Create a copy of all non-readonly fields so we can restore those values if necessary */
-        function takeListItemSnapshot(listItem) {
-            var model = listItem.getModel();
-            var snapshot = {};
-            _.each(model.list.fields, function (fieldDefinition) {
-                if (!fieldDefinition.readOnly) {
-                    snapshot[fieldDefinition.mappedName] = listItem[fieldDefinition.mappedName];
-                }
-            });
-            return snapshot;
-        }
         var APModalService = (function () {
             function APModalService(_toastr_, _$modal_) {
                 toastr = _toastr_;
@@ -147,7 +136,7 @@ var ap;
              */
             APModalService.prototype.modalModelProvider = function (config) {
                 return function openModal(listItem) {
-                    var model = this, snapshot, lockInfo;
+                    var model = this, lockInfo;
                     listItem = listItem || model.createEmptyItem();
                     var defaults = {
                         templateUrl: config.templateUrl,
@@ -167,8 +156,6 @@ var ap;
                     var modalConfig = _.assign({}, defaults, config);
                     var modalInstance = $modal.open(modalConfig);
                     if (listItem.id) {
-                        /** Create a copy in case we need to revert back */
-                        snapshot = takeListItemSnapshot(listItem);
                         modalInstance.result.then(function () {
                             if (config.lock) {
                                 lockInfo.then(function (resolvedInfo) { return resolvedInfo.unlock(); });
@@ -176,7 +163,7 @@ var ap;
                         }, function () {
                             /** Revert back any changes that were made to editable fields, leaving changes made
                              * to readonly fields like attachments */
-                            _.assign(listItem, snapshot);
+                            listItem.setPristine(listItem);
                             if (config.lock) {
                                 lockInfo.then(function (resolvedInfo) { return resolvedInfo.unlock(); });
                             }
@@ -206,7 +193,7 @@ var ap;
      * Extends a modal form to include many standard functions
      *
      */
-        angular.module('angularPoint')
+        angular.module('apModal', ['angularPoint', 'ui.bootstrap', 'toastr'])
             .service('apModalService', modal.APModalService);
     })(modal = ap.modal || (ap.modal = {}));
 })(ap || (ap = {}));

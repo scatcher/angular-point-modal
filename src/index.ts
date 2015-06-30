@@ -11,6 +11,6 @@ module ap.modal {
      * Extends a modal form to include many standard functions
      *
      */
-    angular.module('angularPoint')
+    angular.module('apModal',  ['angularPoint', 'ui.bootstrap', 'toastr'])
         .service('apModalService', APModalService);
 }

@@ -114,18 +114,6 @@ module ap.modal {
         }
     }
 
-    /** Create a copy of all non-readonly fields so we can restore those values if necessary */
-    function takeListItemSnapshot(listItem): Object {
-        var model = listItem.getModel();
-        var snapshot = {};
-        _.each(model.list.fields, function(fieldDefinition) {
-            if (!fieldDefinition.readOnly) {
-                snapshot[fieldDefinition.mappedName] = listItem[fieldDefinition.mappedName];
-            }
-        });
-        return snapshot;
-    }
-
     export class APModalService {
         static $inject = ['toastr', '$modal'];
         
@@ -165,8 +153,8 @@ module ap.modal {
          * </pre>
          */
         modalModelProvider(config: { templateUrl: string; controller: string; resolver?: Function; size?: string; controllerAs?: string; lock?: boolean; }): (listItem?) => angular.IPromise<any> {
-            return function openModal(listItem?) {
-                var model = this, snapshot, lockInfo;
+            return function openModal(listItem?: ap.ListItem<any>) {
+                var model = this, lockInfo;
                 listItem = listItem || model.createEmptyItem();
 
                 var defaults = {
@@ -192,9 +180,6 @@ module ap.modal {
 
                 if (listItem.id) {
 
-                    /** Create a copy in case we need to revert back */
-                    snapshot = takeListItemSnapshot(listItem);
-
                     modalInstance.result.then(function() {
                         if (config.lock) {
                             lockInfo.then((resolvedInfo) => resolvedInfo.unlock());
@@ -203,7 +188,7 @@ module ap.modal {
                     }, function() {
                         /** Revert back any changes that were made to editable fields, leaving changes made
                          * to readonly fields like attachments */
-                        _.assign(listItem, snapshot);
+                         listItem.setPristine(listItem);
 
                         if (config.lock) {
                             lockInfo.then((resolvedInfo) => resolvedInfo.unlock());
