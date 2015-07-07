@@ -1,6 +1,6 @@
 {
   "name": "angular-point-modal",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "main": "./dist/angular-point-modal.js",
   "dependencies": {},
   "devDependencies": {

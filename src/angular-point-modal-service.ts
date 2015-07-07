@@ -116,13 +116,12 @@ module ap.modal {
 
     export class APModalService {
         static $inject = ['toastr', '$modal'];
-        
+
         constructor(_toastr_, _$modal_) {
             toastr = _toastr_;
             $modal = _$modal_;
 
         }
-
 
         /**
          * @ngdoc function
@@ -181,27 +180,29 @@ module ap.modal {
                 if (listItem.id) {
 
                     modalInstance.result.then(function() {
-                        if (config.lock) {
-                            lockInfo.then((resolvedInfo) => resolvedInfo.unlock());
-                        }
-
+                        
+                        unlockOnClose(config.lock, lockInfo);
                     }, function() {
                         /** Revert back any changes that were made to editable fields, leaving changes made
                          * to readonly fields like attachments */
-                         listItem.setPristine(listItem);
-
-                        if (config.lock) {
-                            lockInfo.then((resolvedInfo) => resolvedInfo.unlock());
-                        }
+                        listItem.setPristine(listItem);
+                        
+                        unlockOnClose(config.lock, lockInfo);
                     });
                 }
-
+                
                 return modalInstance.result;
             };
         }
 
+
     }
 
-
+    function unlockOnClose(lock, lockInfo) {
+        if (lock) {
+            //Users without sufficient permissions won't be able to lock so only unlock in the event 
+            lockInfo.then((resolvedInfo) => _.isFunction(resolvedInfo.unlock) ? resolvedInfo.unlock() : undefined);
+        }
+    }
 
 }

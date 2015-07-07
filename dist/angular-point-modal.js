@@ -157,16 +157,12 @@ var ap;
                     var modalInstance = $modal.open(modalConfig);
                     if (listItem.id) {
                         modalInstance.result.then(function () {
-                            if (config.lock) {
-                                lockInfo.then(function (resolvedInfo) { return resolvedInfo.unlock(); });
-                            }
+                            unlockOnClose(config.lock, lockInfo);
                         }, function () {
                             /** Revert back any changes that were made to editable fields, leaving changes made
                              * to readonly fields like attachments */
                             listItem.setPristine(listItem);
-                            if (config.lock) {
-                                lockInfo.then(function (resolvedInfo) { return resolvedInfo.unlock(); });
-                            }
+                            unlockOnClose(config.lock, lockInfo);
                         });
                     }
                     return modalInstance.result;
@@ -176,6 +172,12 @@ var ap;
             return APModalService;
         })();
         modal.APModalService = APModalService;
+        function unlockOnClose(lock, lockInfo) {
+            if (lock) {
+                //Users without sufficient permissions won't be able to lock so only unlock in the event 
+                lockInfo.then(function (resolvedInfo) { return _.isFunction(resolvedInfo.unlock) ? resolvedInfo.unlock() : undefined; });
+            }
+        }
     })(modal = ap.modal || (ap.modal = {}));
 })(ap || (ap = {}));
 
