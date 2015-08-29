@@ -4,7 +4,7 @@ module ap.modal {
     'use strict';
 
 
-    var toastr, $modal: angular.ui.bootstrap.IModalService;
+    var toastr: Toastr, $modal: angular.ui.bootstrap.IModalService, $q: ng.IQService;
 
     export interface IPermObject {
         resolvePermissions(): {
@@ -16,15 +16,20 @@ module ap.modal {
     }
 
     export class APModal {
+        $modalInstance: ng.ui.bootstrap.IModalServiceInstance;
         displayMode: string;
         fullControl = false;
+        listItem: ListItem<any>
         negotiatingWithServer = false;
         userCanApprove = false;
         userCanDelete = false;
         userCanEdit = false;
 
-        constructor(private listItem, private $modalInstance) {
-
+        constructor(listItem: ListItem<any>, $modalInstance: ng.ui.bootstrap.IModalServiceInstance) {
+            
+            //Manually declare to make it more obvious what's available to all child classes
+            this.listItem = listItem;
+            this.$modalInstance = $modalInstance;
 
             var resolvePermissions = (permObj: IPermObject) => {
                 var userPermMask = permObj.resolvePermissions();
@@ -78,12 +83,13 @@ module ap.modal {
                 /** Disable form buttons */
                 this.negotiatingWithServer = true;
 
-                return this.listItem.deleteItem(options).then(() => {
-                    toastr.success('Record deleted successfully');
-                    this.$modalInstance.close();
-                }, function() {
-                    toastr.error('Failed to delete record.  Please try again.');
-                });
+                return this.listItem.deleteItem(options)
+                    .then(() => {
+                        toastr.success('Record deleted successfully');
+                        return this.$modalInstance.close();
+                    }).catch((err) => {
+                        throw this.generateError('deleting', err);
+                    });
             }
         }
 
@@ -92,7 +98,8 @@ module ap.modal {
          * @name angularPoint.apModalService:saveListItem
          * @methodOf angularPoint.apModalService
          * @description
-         * Creates a new record if necessary, otherwise updates the existing record
+         * Creates a new record if necessary, updates list item if it already exists, and closes
+         * if no significant changes have been made. 
          * @param {object} [options] Options to pass to ListItem.saveChanges().
          * @example
          * <pre>
@@ -101,26 +108,42 @@ module ap.modal {
          * </pre>
          */
         saveListItem(options?): ng.IPromise<any> {
-            var promise = this.listItem.saveChanges(options);
+            let promise;
 
-            promise.then(() => {
-                toastr.success('Record updated');
-                this.$modalInstance.close();
-            }, () => {
-                toastr.error('There was a problem updating this record.  Please try again.');
-            });
+            if (this.listItem.id && this.listItem.isPristine()) {
+                promise = $q.when(this.listItem);
+                //No significant changes have been made so just close
+                this.cancel();
+            } else {
+                promise = this.listItem.saveChanges(options);
+
+                promise
+                    .then(() => {
+                        toastr.success('Record updated');
+                        this.$modalInstance.close();
+                    })
+                    .catch((err) => {
+                        throw this.generateError('updating', err);
+                    });
+            }
 
             return promise;
+        }
+        private generateError(action: string, err): Error {
+            toastr.error(`There was a problem ${action} this record.  We've logged the issue and are looking into it.  Any additional information you can provide would be appreciated.`);
+            return new Error(`Summary: Error ${action} list item from modal.
+                Error: ${err}
+                ListItem: ${JSON.stringify(this.listItem) }`);
         }
     }
 
     export class APModalService {
-        static $inject = ['toastr', '$modal'];
+        static $inject = ['toastr', '$modal', '$q'];
 
-        constructor(_toastr_, _$modal_) {
+        constructor(_toastr_, _$modal_, _$q_) {
             toastr = _toastr_;
             $modal = _$modal_;
-
+            $q = _$q_;
         }
 
         /**
@@ -179,18 +202,18 @@ module ap.modal {
 
                 if (listItem.id) {
 
-                    modalInstance.result.then(function() {
-                        
-                        unlockOnClose(config.lock, lockInfo);
-                    }, function() {
-                        /** Revert back any changes that were made to editable fields, leaving changes made
-                         * to readonly fields like attachments */
-                        listItem.setPristine(listItem);
-                        
-                        unlockOnClose(config.lock, lockInfo);
-                    });
+                    modalInstance.result
+                        .then(function() {
+                            unlockOnClose(config.lock, lockInfo);
+                        })
+                        .catch(function() {
+                            /** Revert back any changes that were made to editable fields, leaving changes made
+                             * to readonly fields like attachments */
+                            listItem.setPristine(listItem);
+                            unlockOnClose(config.lock, lockInfo);
+                        });
                 }
-                
+
                 return modalInstance.result;
             };
         }

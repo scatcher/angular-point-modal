@@ -4,17 +4,18 @@ var ap;
     var modal;
     (function (modal) {
         'use strict';
-        var toastr, $modal;
+        var toastr, $modal, $q;
         var APModal = (function () {
             function APModal(listItem, $modalInstance) {
                 var _this = this;
-                this.listItem = listItem;
-                this.$modalInstance = $modalInstance;
                 this.fullControl = false;
                 this.negotiatingWithServer = false;
                 this.userCanApprove = false;
                 this.userCanDelete = false;
                 this.userCanEdit = false;
+                //Manually declare to make it more obvious what's available to all child classes
+                this.listItem = listItem;
+                this.$modalInstance = $modalInstance;
                 var resolvePermissions = function (permObj) {
                     var userPermMask = permObj.resolvePermissions();
                     _this.userCanEdit = userPermMask.EditListItems;
@@ -66,11 +67,12 @@ var ap;
                 if (confirmation) {
                     /** Disable form buttons */
                     this.negotiatingWithServer = true;
-                    return this.listItem.deleteItem(options).then(function () {
+                    return this.listItem.deleteItem(options)
+                        .then(function () {
                         toastr.success('Record deleted successfully');
-                        _this.$modalInstance.close();
-                    }, function () {
-                        toastr.error('Failed to delete record.  Please try again.');
+                        return _this.$modalInstance.close();
+                    }).catch(function (err) {
+                        throw _this.generateError('deleting', err);
                     });
                 }
             };
@@ -79,7 +81,8 @@ var ap;
              * @name angularPoint.apModalService:saveListItem
              * @methodOf angularPoint.apModalService
              * @description
-             * Creates a new record if necessary, otherwise updates the existing record
+             * Creates a new record if necessary, updates list item if it already exists, and closes
+             * if no significant changes have been made.
              * @param {object} [options] Options to pass to ListItem.saveChanges().
              * @example
              * <pre>
@@ -89,22 +92,37 @@ var ap;
              */
             APModal.prototype.saveListItem = function (options) {
                 var _this = this;
-                var promise = this.listItem.saveChanges(options);
-                promise.then(function () {
-                    toastr.success('Record updated');
-                    _this.$modalInstance.close();
-                }, function () {
-                    toastr.error('There was a problem updating this record.  Please try again.');
-                });
+                var promise;
+                if (this.listItem.id && this.listItem.isPristine()) {
+                    promise = $q.when(this.listItem);
+                    //No significant changes have been made so just close
+                    this.cancel();
+                }
+                else {
+                    promise = this.listItem.saveChanges(options);
+                    promise
+                        .then(function () {
+                        toastr.success('Record updated');
+                        _this.$modalInstance.close();
+                    })
+                        .catch(function (err) {
+                        throw _this.generateError('updating', err);
+                    });
+                }
                 return promise;
+            };
+            APModal.prototype.generateError = function (action, err) {
+                toastr.error("There was a problem " + action + " this record.  We've logged the issue and are looking into it.  Any additional information you can provide would be appreciated.");
+                return new Error("Summary: Error " + action + " list item from modal.\n                Error: " + err + "\n                ListItem: " + JSON.stringify(this.listItem));
             };
             return APModal;
         })();
         modal.APModal = APModal;
         var APModalService = (function () {
-            function APModalService(_toastr_, _$modal_) {
+            function APModalService(_toastr_, _$modal_, _$q_) {
                 toastr = _toastr_;
                 $modal = _$modal_;
+                $q = _$q_;
             }
             /**
              * @ngdoc function
@@ -156,9 +174,11 @@ var ap;
                     var modalConfig = _.assign({}, defaults, config);
                     var modalInstance = $modal.open(modalConfig);
                     if (listItem.id) {
-                        modalInstance.result.then(function () {
+                        modalInstance.result
+                            .then(function () {
                             unlockOnClose(config.lock, lockInfo);
-                        }, function () {
+                        })
+                            .catch(function () {
                             /** Revert back any changes that were made to editable fields, leaving changes made
                              * to readonly fields like attachments */
                             listItem.setPristine(listItem);
@@ -168,7 +188,7 @@ var ap;
                     return modalInstance.result;
                 };
             };
-            APModalService.$inject = ['toastr', '$modal'];
+            APModalService.$inject = ['toastr', '$modal', '$q'];
             return APModalService;
         })();
         modal.APModalService = APModalService;
@@ -189,12 +209,12 @@ var ap;
     (function (modal) {
         'use strict';
         /**
-     * @ngdoc service
-     * @name ap.apModalService
-     * @description
-     * Extends a modal form to include many standard functions
-     *
-     */
+         * @ngdoc service
+         * @name ap.apModalService
+         * @description
+         * Extends a modal form to include many standard functions
+         *
+         */
         angular.module('apModal', ['angularPoint', 'ui.bootstrap', 'toastr'])
             .service('apModalService', modal.APModalService);
     })(modal = ap.modal || (ap.modal = {}));
