@@ -4,7 +4,7 @@ module ap.modal {
     'use strict';
 
 
-    var toastr: Toastr, $modal: angular.ui.bootstrap.IModalService, $q: ng.IQService;
+    var toastr: Toastr, $uibModal: angular.ui.bootstrap.IModalService, $q: ng.IQService;
 
     export interface IPermObject {
         resolvePermissions(): {
@@ -16,7 +16,7 @@ module ap.modal {
     }
 
     export class APModal {
-        $modalInstance: ng.ui.bootstrap.IModalServiceInstance;
+        $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance;
         displayMode: string;
         fullControl = false;
         listItem: ListItem<any>
@@ -25,11 +25,11 @@ module ap.modal {
         userCanDelete = false;
         userCanEdit = false;
 
-        constructor(listItem: ListItem<any>, $modalInstance: ng.ui.bootstrap.IModalServiceInstance) {
+        constructor(listItem: ListItem<any>, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance) {
             
             //Manually declare to make it more obvious what's available to all child classes
             this.listItem = listItem;
-            this.$modalInstance = $modalInstance;
+            this.$uibModalInstance = $uibModalInstance;
 
             var resolvePermissions = (permObj: IPermObject) => {
                 var userPermMask = permObj.resolvePermissions();
@@ -57,7 +57,7 @@ module ap.modal {
         }
 
         cancel(): void {
-            this.$modalInstance.dismiss('cancel');
+            this.$uibModalInstance.dismiss('cancel');
         }
 
         /**
@@ -86,7 +86,7 @@ module ap.modal {
                 return this.listItem.deleteItem(options)
                     .then(() => {
                         toastr.success('Record deleted successfully');
-                        return this.$modalInstance.close();
+                        return this.$uibModalInstance.close();
                     }).catch((err) => {
                         throw this.generateError('deleting', err);
                     });
@@ -120,7 +120,7 @@ module ap.modal {
                 promise
                     .then(() => {
                         toastr.success('Record updated');
-                        this.$modalInstance.close();
+                        this.$uibModalInstance.close();
                     })
                     .catch((err) => {
                         throw this.generateError('updating', err);
@@ -133,16 +133,16 @@ module ap.modal {
             toastr.error(`There was a problem ${action} this record.  We've logged the issue and are looking into it.  Any additional information you can provide would be appreciated.`);
             return new Error(`Summary: Error ${action} list item from modal.
                 Error: ${err}
-                ListItem: ${JSON.stringify(this.listItem) }`);
+                ListItem: ${JSON.stringify(this.listItem, null, 2) }`);
         }
     }
 
     export class APModalService {
-        static $inject = ['toastr', '$modal', '$q'];
+        static $inject = ['toastr', '$uibModal', '$q'];
 
-        constructor(_toastr_, _$modal_, _$q_) {
+        constructor(_toastr_, _$uibModal_, _$q_) {
             toastr = _toastr_;
-            $modal = _$modal_;
+            $uibModal = _$uibModal_;
             $q = _$q_;
         }
 
@@ -198,7 +198,7 @@ module ap.modal {
                 }
 
                 var modalConfig = _.assign({}, defaults, config);
-                var modalInstance = $modal.open(modalConfig);
+                var modalInstance = $uibModal.open(modalConfig);
 
                 if (listItem.id) {
 

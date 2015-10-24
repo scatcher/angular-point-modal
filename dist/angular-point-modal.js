@@ -4,9 +4,9 @@ var ap;
     var modal;
     (function (modal) {
         'use strict';
-        var toastr, $modal, $q;
+        var toastr, $uibModal, $q;
         var APModal = (function () {
-            function APModal(listItem, $modalInstance) {
+            function APModal(listItem, $uibModalInstance) {
                 var _this = this;
                 this.fullControl = false;
                 this.negotiatingWithServer = false;
@@ -15,7 +15,7 @@ var ap;
                 this.userCanEdit = false;
                 //Manually declare to make it more obvious what's available to all child classes
                 this.listItem = listItem;
-                this.$modalInstance = $modalInstance;
+                this.$uibModalInstance = $uibModalInstance;
                 var resolvePermissions = function (permObj) {
                     var userPermMask = permObj.resolvePermissions();
                     _this.userCanEdit = userPermMask.EditListItems;
@@ -42,7 +42,7 @@ var ap;
                 }
             }
             APModal.prototype.cancel = function () {
-                this.$modalInstance.dismiss('cancel');
+                this.$uibModalInstance.dismiss('cancel');
             };
             /**
              * @ngdoc function
@@ -70,7 +70,7 @@ var ap;
                     return this.listItem.deleteItem(options)
                         .then(function () {
                         toastr.success('Record deleted successfully');
-                        return _this.$modalInstance.close();
+                        return _this.$uibModalInstance.close();
                     }).catch(function (err) {
                         throw _this.generateError('deleting', err);
                     });
@@ -103,7 +103,7 @@ var ap;
                     promise
                         .then(function () {
                         toastr.success('Record updated');
-                        _this.$modalInstance.close();
+                        _this.$uibModalInstance.close();
                     })
                         .catch(function (err) {
                         throw _this.generateError('updating', err);
@@ -113,15 +113,15 @@ var ap;
             };
             APModal.prototype.generateError = function (action, err) {
                 toastr.error("There was a problem " + action + " this record.  We've logged the issue and are looking into it.  Any additional information you can provide would be appreciated.");
-                return new Error("Summary: Error " + action + " list item from modal.\n                Error: " + err + "\n                ListItem: " + JSON.stringify(this.listItem));
+                return new Error("Summary: Error " + action + " list item from modal.\n                Error: " + err + "\n                ListItem: " + JSON.stringify(this.listItem, null, 2));
             };
             return APModal;
         })();
         modal.APModal = APModal;
         var APModalService = (function () {
-            function APModalService(_toastr_, _$modal_, _$q_) {
+            function APModalService(_toastr_, _$uibModal_, _$q_) {
                 toastr = _toastr_;
-                $modal = _$modal_;
+                $uibModal = _$uibModal_;
                 $q = _$q_;
             }
             /**
@@ -172,7 +172,7 @@ var ap;
                         defaults.resolve.lockInfo = function () { return lockInfo; };
                     }
                     var modalConfig = _.assign({}, defaults, config);
-                    var modalInstance = $modal.open(modalConfig);
+                    var modalInstance = $uibModal.open(modalConfig);
                     if (listItem.id) {
                         modalInstance.result
                             .then(function () {
@@ -188,7 +188,7 @@ var ap;
                     return modalInstance.result;
                 };
             };
-            APModalService.$inject = ['toastr', '$modal', '$q'];
+            APModalService.$inject = ['toastr', '$uibModal', '$q'];
             return APModalService;
         })();
         modal.APModalService = APModalService;
