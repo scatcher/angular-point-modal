@@ -3,8 +3,16 @@
 module ap.modal {
     'use strict';
 
-
-    var toastr: Toastr, $uibModal: angular.ui.bootstrap.IModalService, $q: ng.IQService;
+    //TODO: Remove once we can import toastr as dependency
+    if(!window.toastr) {
+        window.toastr = {
+            error: console.error,
+            info: console.info,
+            success: console.info,
+            warning: console.warn
+        }
+    }
+    var $uibModal: angular.ui.bootstrap.IModalService, $q: ng.IQService;
 
     export interface IPermObject {
         resolvePermissions(): {
@@ -26,7 +34,7 @@ module ap.modal {
         userCanEdit = false;
 
         constructor(listItem: ListItem<any>, $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance) {
-            
+
             //Manually declare to make it more obvious what's available to all child classes
             this.listItem = listItem;
             this.$uibModalInstance = $uibModalInstance;
@@ -99,7 +107,7 @@ module ap.modal {
          * @methodOf angularPoint.apModalService
          * @description
          * Creates a new record if necessary, updates list item if it already exists, and closes
-         * if no significant changes have been made. 
+         * if no significant changes have been made.
          * @param {object} [options] Options to pass to ListItem.saveChanges().
          * @example
          * <pre>
@@ -138,10 +146,9 @@ module ap.modal {
     }
 
     export class APModalService {
-        static $inject = ['toastr', '$uibModal', '$q'];
+        static $inject = ['$uibModal', '$q'];
 
-        constructor(_toastr_, _$uibModal_, _$q_) {
-            toastr = _toastr_;
+        constructor(_$uibModal_, _$q_) {
             $uibModal = _$uibModal_;
             $q = _$q_;
         }
@@ -223,7 +230,7 @@ module ap.modal {
 
     function unlockOnClose(lock, lockInfo) {
         if (lock) {
-            //Users without sufficient permissions won't be able to lock so only unlock in the event 
+            //Users without sufficient permissions won't be able to lock so only unlock in the event
             lockInfo.then((resolvedInfo) => _.isFunction(resolvedInfo.unlock) ? resolvedInfo.unlock() : undefined);
         }
     }

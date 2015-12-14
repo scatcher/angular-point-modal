@@ -1,6 +1,6 @@
 {
   "name": "angular-point-modal",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "main": "./dist/angular-point-modal.js",
   "dependencies": {},
   "devDependencies": {
@@ -8,9 +8,9 @@
     "gulp-concat": "^2.6.0",
     "gulp-ng-annotate": "~1.1.0",
     "gulp-sourcemaps": "^1.6.0",
-    "gulp-typescript": "^2.9.2",
+    "gulp-typescript": "^2.10.0",
     "lodash": "~3.10.1",
-    "typescript": "^1.6.2"
+    "typescript": "^1.7.5"
   },
   "engines": {
     "node": ">=0.10.0"

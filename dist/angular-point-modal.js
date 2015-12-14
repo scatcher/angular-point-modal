@@ -4,7 +4,16 @@ var ap;
     var modal;
     (function (modal) {
         'use strict';
-        var toastr, $uibModal, $q;
+        //TODO: Remove once we can import toastr as dependency
+        if (!window.toastr) {
+            window.toastr = {
+                error: console.error,
+                info: console.info,
+                success: console.info,
+                warning: console.warn
+            };
+        }
+        var $uibModal, $q;
         var APModal = (function () {
             function APModal(listItem, $uibModalInstance) {
                 var _this = this;
@@ -119,8 +128,7 @@ var ap;
         })();
         modal.APModal = APModal;
         var APModalService = (function () {
-            function APModalService(_toastr_, _$uibModal_, _$q_) {
-                toastr = _toastr_;
+            function APModalService(_$uibModal_, _$q_) {
                 $uibModal = _$uibModal_;
                 $q = _$q_;
             }
@@ -188,13 +196,13 @@ var ap;
                     return modalInstance.result;
                 };
             };
-            APModalService.$inject = ['toastr', '$uibModal', '$q'];
+            APModalService.$inject = ['$uibModal', '$q'];
             return APModalService;
         })();
         modal.APModalService = APModalService;
         function unlockOnClose(lock, lockInfo) {
             if (lock) {
-                //Users without sufficient permissions won't be able to lock so only unlock in the event 
+                //Users without sufficient permissions won't be able to lock so only unlock in the event
                 lockInfo.then(function (resolvedInfo) { return _.isFunction(resolvedInfo.unlock) ? resolvedInfo.unlock() : undefined; });
             }
         }
@@ -215,7 +223,7 @@ var ap;
          * Extends a modal form to include many standard functions
          *
          */
-        angular.module('apModal', ['angularPoint', 'ui.bootstrap', 'toastr'])
+        angular.module('apModal', ['angularPoint', 'ui.bootstrap'])
             .service('apModalService', modal.APModalService);
     })(modal = ap.modal || (ap.modal = {}));
 })(ap || (ap = {}));
