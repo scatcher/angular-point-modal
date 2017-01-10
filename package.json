@@ -1,6 +1,6 @@
 {
   "name": "angular-point-modal",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "main": "./dist/angular-point-modal.js",
   "scripts": {
     "build": "webpack"
