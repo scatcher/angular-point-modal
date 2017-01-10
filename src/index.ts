@@ -1,16 +1,12 @@
-/// <reference path="../typings/tsd.d.ts" />
-/// <reference path="../typings/ap.d.ts" />
+import {APModalService} from './angular-point-modal-service';
+import {AngularPointModule} from 'angular-point';
 
-module ap.modal {
-    'use strict';
-	
-    /**
-     * @ngdoc service
-     * @name ap.apModalService
-     * @description
-     * Extends a modal form to include many standard functions
-     *
-     */
-    angular.module('apModal', ['angularPoint', 'ui.bootstrap', 'toastr'])
-        .service('apModalService', APModalService);
-}
+/**
+ * @ngdoc service
+ * @name apModalService
+ * @description
+ * Extends a modal form to include many standard functions
+ *
+ */
+AngularPointModule
+    .service('apModalService', APModalService);
