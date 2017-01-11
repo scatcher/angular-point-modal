@@ -1,7 +1,6 @@
 import {APModalService, APModal} from './angular-point-modal-service';
 import {AngularPointModule} from 'angular-point';
 
-export * from './angular-point-modal-service';
 
 /**
  * @ngdoc service
@@ -13,3 +12,4 @@ export * from './angular-point-modal-service';
 AngularPointModule
     .service('apModalService', APModalService);
 
+export { APModal, APModalService };
