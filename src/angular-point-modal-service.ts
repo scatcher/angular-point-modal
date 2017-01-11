@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import {IModalService, IModalServiceInstance} from 'angular-ui-bootstrap';
 import {ListItem} from 'angular-point';
 
-var $uibModal: IModalService, $q: ng.IQService;
+let $uibModal: IModalService, $q: ng.IQService;
 
 export interface IPermObject {
     resolvePermissions(): {
@@ -39,12 +39,12 @@ export class APModal {
 
     constructor(listItem: ListItem<any>, $uibModalInstance: IModalServiceInstance) {
 
-        //Manually declare to make it more obvious what's available to all child classes
+        // Manually declare to make it more obvious what's available to all child classes
         this.listItem = listItem;
         this.$uibModalInstance = $uibModalInstance;
 
-        var resolvePermissions = (permObj: IPermObject) => {
-            var userPermMask = permObj.resolvePermissions();
+        const resolvePermissions = (permObj: IPermObject) => {
+            const userPermMask = permObj.resolvePermissions();
             this.userCanEdit = userPermMask.EditListItems;
             this.userCanDelete = userPermMask.DeleteListItems;
             this.userCanApprove = userPermMask.ApproveItems;
@@ -89,7 +89,7 @@ export class APModal {
      * </pre>
      */
     deleteListItem(): ng.IPromise<any> {
-        var confirmation = window.confirm('Are you sure you want to delete this record?');
+        const confirmation = window.confirm('Are you sure you want to delete this record?');
         if (confirmation) {
             /** Disable form buttons */
             this.negotiatingWithServer = true;
@@ -240,7 +240,7 @@ export class APModalService {
 
 function unlockOnClose(lock, lockInfo) {
     if (lock) {
-        //Users without sufficient permissions won't be able to lock so only unlock in the event
+        // Users without sufficient permissions won't be able to lock so only unlock in the event
         lockInfo.then((resolvedInfo) => _.isFunction(resolvedInfo.unlock) ? resolvedInfo.unlock() : undefined);
     }
 }
