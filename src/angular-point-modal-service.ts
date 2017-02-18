@@ -13,6 +13,7 @@ export interface IPermObject {
         FullMask: boolean;
     };
 }
+
 export interface ModalConfig {
     templateUrl?: string;
     template?: string;
@@ -22,11 +23,13 @@ export interface ModalConfig {
     controllerAs?: string;
     lock?: boolean;
 }
+
 interface ModalConfigOptions extends ModalConfig {
     resolve: {
         [key: string]: any
     };
 }
+
 export class APModal {
     $uibModalInstance: IModalServiceInstance;
     displayMode: string;
@@ -43,6 +46,9 @@ export class APModal {
         this.listItem = listItem;
         this.$uibModalInstance = $uibModalInstance;
 
+    }
+
+    $onInit() {
         const resolvePermissions = (permObj: IPermObject) => {
             const userPermMask = permObj.resolvePermissions();
             this.userCanEdit = userPermMask.EditListItems;
@@ -51,15 +57,15 @@ export class APModal {
             this.fullControl = userPermMask.FullMask;
         };
 
-        if (listItem && listItem.id && listItem.resolvePermissions) {
-            resolvePermissions(listItem);
-        } else if (listItem.getModel && listItem.getModel().resolvePermissions) {
+        if (this.listItem && this.listItem.id && this.listItem.resolvePermissions) {
+            resolvePermissions(this.listItem);
+        } else if (this.listItem.getModel && this.listItem.getModel().resolvePermissions) {
             /** Fallback to retrieve permissions from the model when a list item isn't available */
-            resolvePermissions(listItem.getModel());
+            resolvePermissions(this.listItem.getModel());
         }
 
         /** Check if it's a new form */
-        if (!listItem || !listItem.id) {
+        if (!this.listItem || !this.listItem.id) {
             this.displayMode = 'New';
         } else if (this.userCanEdit) {
             this.displayMode = 'Edit';
