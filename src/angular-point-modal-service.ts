@@ -46,9 +46,6 @@ export class APModal {
         this.listItem = listItem;
         this.$uibModalInstance = $uibModalInstance;
 
-    }
-
-    $onInit() {
         const resolvePermissions = (permObj: IPermObject) => {
             const userPermMask = permObj.resolvePermissions();
             this.userCanEdit = userPermMask.EditListItems;
@@ -73,6 +70,9 @@ export class APModal {
             this.displayMode = 'View';
         }
     }
+
+    // Lifecycle hook in case we need it    
+    $onInit() { }
 
     cancel(): void {
         this.$uibModalInstance.dismiss('cancel');
