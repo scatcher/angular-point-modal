@@ -129,15 +129,15 @@ export class APModal {
 
         if (this.listItem.id && this.listItem.isPristine()) {
             promise = $q.when(this.listItem);
-            //No significant changes have been made so just close
+            // No significant changes have been made so just close
             this.cancel();
         } else {
             promise = this.listItem.saveChanges(options);
 
             promise
-                .then(() => {
+                .then((updatedListItem) => {
                     toastr.success('Record updated');
-                    this.$uibModalInstance.close();
+                    this.$uibModalInstance.close(updatedListItem);
                 })
                 .catch((err) => {
                     throw this.generateError('updating', err);
