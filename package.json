@@ -1,10 +1,10 @@
 {
   "name": "angular-point-modal",
-  "version": "5.0.7",
+  "version": "5.0.8",
   "scripts": {
     "build": "webpack"
   },
-  "dependencies": {
+  "peerDependencies": {
     "angular": "~1.6.1",
     "angular-point": "^5.0.0",
     "angular-ui-bootstrap": "^2.4.0",
